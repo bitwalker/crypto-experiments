@@ -10,7 +10,7 @@
 
 (defn encode-hex
   "Encode a string as hex"
-  [s]the, and, tha, ent, ing, ion, tio, for, nde, has, nce, edt, tis, oft, sth, men
+  [s]
   (format "%x" (new java.math.BigInteger (.getBytes s))))
 
 (defn encode-hex-bytes
@@ -52,6 +52,15 @@
   [a b]
   (let [result (apply-xor-bytes a b)]
     (apply str (map char result))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; String Manipulation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn repeat-char
+  "Builds a string of a given character of `n` length"
+  [c n]
+  (apply str (take n (repeatedly #(str c)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Collections
@@ -103,15 +112,11 @@
         maxscore (count common-ngrams)]
     (Math/ceil (* (/ score maxscore) 100))))
 
-(ngram-commonality 2 "Paul is an awesome programmer !" common-bigrams)
-(ngram-commonality 3 "Paul is an awesome programmer !" common-trigrams)
-
-
 (defn score-letter-frequency
   "Score a string on the amount of overlap it has with average English letter frequency"
   [text]
   (let [alphabet        (vec (char-array "ABCDEFGHIJKLMNOPQRSTUVWXYZ "))
-        english-freqs   (rseq (english-frequencies))
+        english-freqs   (rseq english-frequencies)
         text-freqs      (rseq (to-prioritymap
                                  (select-keys (frequencies (.toUpperCase text))
                                               alphabet)))
@@ -125,16 +130,22 @@
     (Math/ceil (* (/ (+ top bottom) 12) 100))))
 
 (defn is-english?
+  "Combine letter, bigram, and trigram frequency scores to score a string on the likelihood that it is an English phrase.
+   Weighting is applied most heavily to trigrams, followed by bigrams, then letters.
+   The score produced is between 0 and 100. 100 being almost certainly English, 0 obviously not English."
   [s]
   (let [frequency-score (score-letter-frequency s)
-        bigram-score    (ngram-commonality 2 s common-bigrams)
-        trigram-score   (ngram-commonality 3 s common-trigrams)]
-    (Math/ceil (/ (+ frequency-score bigram-score trigram-score) 3))))
-
-(is-english? "Paul is an awesome programmer!")
+        bigram-score    (* (ngram-commonality 2 s common-bigrams) 2)
+        trigram-score   (* (ngram-commonality 3 s common-trigrams) 3)
+        total-score     (+ frequency-score bigram-score trigram-score)
+        interpolated    (Math/ceil (/ (* (- total-score 100) 100) 100))]
+    (if (> total-score 100)
+      interpolated
+      (+ 100 interpolated))))
 
 ;; CHALLENGE #1
 ;; Convert the hex-encoded string to base64 and back, preserving the original value.
+
 (defn hex-to-base64-and-back
   []
   (let [original "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
@@ -149,6 +160,7 @@
 
 ;; CHALLENGE #2
 ;; Given two equal length buffers, produce their XOR sum
+
 (defn xor-two-buffers
   []
   (let [one      (decode-hex "1c0111001f010100061a024b53535009181c")
@@ -158,38 +170,37 @@
     (is (= result expected))))
 
 
-;; Builds a string of a given character of `n` length
-(defn repeat-char
-  [c n]
-  (apply str (take n (repeatedly #(str c)))))
+;; CHALLENGE #3
+;; Decrypt a cipher which was XOR'd against a single character key
+;; using frequency analysis to determine if decryption was successful
 
-(defn map-decrypt-results
-  [cipher cipherkey]
-  (assoc {} (first cipherkey) (apply-xor cipher cipherkey)))
-
-(defn construct-keymap
+(defn xor-map
+  "Generate a map of the result of applying an XOR of each key in `cipherkeys` against `cipher`"
   [cipherkeys cipher]
   (let [mapped (map #(assoc {} (first %) (apply-xor % cipher)) cipherkeys)]
     (apply array-map (vec (apply concat (map first mapped))))))
 
 (defn decrypt-single-char-xor-message
-  []
-  (let [cipher       "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-        decoded      (decode-hex cipher)
+  [cipher]
+  (let [decoded      (decode-hex cipher)
         len          (count decoded)
+        ;; Get a sequence of all the single character cipher keys we wish to test
         single-chars (map str (char-array "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
+        ;; Map the single char key candidates to keys of equal length as the cipher
         cipherkeys   (map #(apply str (repeat len %)) single-chars)
-        potentials   (construct-keymap cipherkeys decoded)
-        scores       (map #(assoc {} (key %) (is-english? (val %))) potentials)]
-    (reduce (fn [x y]
-              (let [valx (val (last x))
-                    valy (val (last y))]
-              (if (> valx valy)
-                x
-                y)))
-            scores)))
+        ;; Get a map of applying XOR to each key and the decoded cipher
+        potentials   (xor-map cipherkeys decoded)
+        ;; Score each result based on the likelihood it's English
+        scores       (map #(assoc {} (key %) (is-english? (val %))) potentials)
+        ;; Our candidate for successful decryption is the highest scoring result
+        candidate    (key (first (reduce #(if (> (val (last %))
+                                                 (val (last %2)))
+                                            %
+                                            %2)
+                                         scores)))]
+    (get potentials candidate)))
 
 
 ;;(hex-to-base64-and-back)
 ;;(xor-two-buffers)
-;;(decrypt-single-char-xor-message)
+;;(decrypt-single-char-xor-message "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
