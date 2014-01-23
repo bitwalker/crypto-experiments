@@ -26,9 +26,7 @@ we will set them up.
 
 * Please prefix the subject of your mail with RESPONSE:.
 
-// ------------------------------------------------------------
-
-1. Convert hex to base64 and back.
+## 1. Convert hex to base64 and back.
 
 The string:
 
@@ -44,9 +42,7 @@ simple rule of thumb:
 Always operate on raw bytes, never on encoded strings. Only use hex
 and base64 for pretty-printing.
 
-// ------------------------------------------------------------
-
-2. Fixed XOR
+## 2. Fixed XOR
 
 Write a function that takes two equal-length buffers and produces
 their XOR sum.
@@ -63,9 +59,7 @@ The string:
 
 746865206b696420646f6e277420706c6179
 
-// ------------------------------------------------------------
-
-3. Single-character XOR Cipher
+## 3. Single-character XOR Cipher
 
 The hex encoded string:
 
@@ -80,20 +74,16 @@ Evaluate each output and choose the one with the best score.
 
 Tune your algorithm until this works.
 
-// ------------------------------------------------------------
-
-4. Detect single-character XOR
+## 4. Detect single-character XOR
 
 One of the 60-character strings at:
 
 https://gist.github.com/3132713
 
 has been encrypted by single-character XOR. Find it. (Your code from
-#3 should help.)
+\#3 should help.)
 
-// ------------------------------------------------------------
-
-5. Repeating-key XOR Cipher
+## 5. Repeating-key XOR Cipher
 
 Write the code to encrypt the string:
 
@@ -107,9 +97,7 @@ Under the key "ICE", using repeating-key XOR. It should come out to:
 Encrypt a bunch of stuff using your repeating-key XOR function. Get a
 feel for it.
 
-// ------------------------------------------------------------
-
-6. Break repeating-key XOR
+## 6. Break repeating-key XOR
 
 The buffer at the following location:
 
@@ -157,9 +145,7 @@ e. For each block, the single-byte XOR key that produces the best
 looking histogram is the repeating-key XOR key byte for that
 block. Put them together and you have the key.
 
-// ------------------------------------------------------------
-
-7. AES in ECB Mode
+## 7. AES in ECB Mode
 
 The Base64-encoded content at the following location:
 
@@ -177,9 +163,7 @@ Easiest way:
 
 Use OpenSSL::Cipher and give it AES-128-ECB as the cipher.
 
-// ------------------------------------------------------------
-
-8. Detecting ECB
+## 8. Detecting ECB
 
 At the following URL are a bunch of hex-encoded ciphertexts:
 
@@ -190,9 +174,3 @@ One of them is ECB encrypted. Detect it.
 Remember that the problem with ECB is that it is stateless and
 deterministic; the same 16 byte plaintext block will always produce
 the same 16 byte ciphertext.
-
-// ------------------------------------------------------------
-
-## Usage
-
-    $ java -jar crypto-challenge-0.1.0-standalone.jar [args]
