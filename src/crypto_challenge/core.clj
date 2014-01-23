@@ -80,6 +80,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Frequency Analysis
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (def english-frequencies
   "Get a map of the letters of the alphabet and their average
    frequency of appearance in most English text"
@@ -197,7 +198,8 @@
   (let [mapped (map #(assoc {} (first %) (apply-xor % cipher)) cipherkeys)]
     (apply array-map (vec (apply concat (map first mapped))))))
 
-(defn decrypt-single-char-xor-message
+(defn decrypt-single-char-xor
+  "Decrypts a given cipher, assuming it was XOR'd with a single character key"
   [cipher]
   (let [decoded      (decode-hex cipher)
         len          (count decoded)
@@ -217,7 +219,14 @@
                                          scores)))]
     (get potentials candidate)))
 
+;; CHALLENGE #4
+;; In a file of 60 random strings XOR'd with a single character key,
+;; find the one which is valid English
+(defn detect-single-char-xor-message
+  []
+  (let [strings    (get-lines "gistfile1.txt")
+        candidates (map decrypt-single-char-xor strings)]))
 
 ;;(hex-to-base64-and-back)
 ;;(xor-two-buffers)
-;;(decrypt-single-char-xor-message "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
+;;(decrypt-single-char-xor "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
