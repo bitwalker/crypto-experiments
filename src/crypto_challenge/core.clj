@@ -1,6 +1,7 @@
 (ns crypto-challenge.core
   (:gen-class)
   (:require [clojure.test :refer :all]
+            [clojure.java.io :as io]
             [clojure.data.priority-map :refer :all]
             [clojure.data.codec.base64 :as b64]))
 
@@ -142,6 +143,22 @@
     (if (> total-score 100)
       interpolated
       (+ 100 interpolated))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; File IO
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn get-resource
+  [r]
+  (-> r
+      io/resource
+      io/file))
+
+(defn get-lines
+  [r]
+  (let [contents (slurp (get-resource r))]
+    (clojure.string/split contents #"\n")))
 
 ;; CHALLENGE #1
 ;; Convert the hex-encoded string to base64 and back, preserving the original value.
