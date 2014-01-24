@@ -67,7 +67,7 @@
 (defn repeat-char
   "Builds a string of a given character of `n` length"
   [c n]
-  (apply str (take n (repeatedly #(str c)))))
+  (apply str (repeat n c)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Collections
@@ -212,7 +212,7 @@
         ;; Get a sequence of all the single character cipher keys we wish to test
         single-chars (map str (concat (char-range \A \Z) (char-range \0 \9)))
         ;; Map the single char key candidates to keys of equal length as the cipher
-        cipherkeys   (map #(apply str (repeat len %)) single-chars)
+        cipherkeys   (map #(repeat-char % len) single-chars)
         ;; Get a map of applying XOR to each key and the decoded cipher
         potentials   (xor-map cipherkeys decoded)
         ;; Score each result based on the likelihood it's English
