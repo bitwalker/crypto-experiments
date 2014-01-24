@@ -1,4 +1,4 @@
-(ns crypto-challenge.core
+(ns crypto-experiments.core
   (:gen-class)
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
