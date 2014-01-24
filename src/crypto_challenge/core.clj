@@ -2,6 +2,7 @@
   (:gen-class)
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
+            [clojure.string :as string]
             [clojure.data.priority-map :refer :all]
             [clojure.data.codec.base64 :as b64]))
 
@@ -93,11 +94,11 @@
 
 (def common-bigrams
   "A vector of common English bigrams"
-  (clojure.string/split "TH HE IN EN NT RE ER AN TI ES ON AT SE ND OR AR AL TE CO DE TO RA ET ED IT SA EM RO ST OF HI AS IS" #"\s"))
+  (string/split "TH HE IN EN NT RE ER AN TI ES ON AT SE ND OR AR AL TE CO DE TO RA ET ED IT SA EM RO ST OF HI AS IS" #"\s"))
 
 (def common-trigrams
   "A vector of common English trigrams"
-  (clojure.string/split "THE AND THA ENT ING ION TIO FOR NDE HAS NCE EDT TIS OFT STH MEN" #"\s"))
+  (string/split "THE AND THA ENT ING ION TIO FOR NDE HAS NCE EDT TIS OFT STH MEN" #"\s"))
 
 (defn ngram
   "Generate a vector of n-grams in the given string"
