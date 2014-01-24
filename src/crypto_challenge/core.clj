@@ -205,8 +205,9 @@
   (let [mapped (map #(assoc {} (first %) (apply-xor % cipher)) cipherkeys)]
     (apply array-map (vec (apply concat (map first mapped))))))
 
-(defn decrypt-single-char-xor
-  "Decrypts a given cipher, assuming it was XOR'd with a single character key"
+(defn bruteforce-single-char-xor-key
+  "Attempts to brute force the key to an XOR cipher keyed with a single character.
+   Returns the most probable candidate key."
   [cipher]
   (let [decoded      (decode-hex cipher)
         len          (count decoded)
@@ -224,7 +225,14 @@
                                             %
                                             %2)
                                          scores)))]
-    (get potentials candidate)))
+  (repeat-char candidate len)))
+
+(defn decrypt-single-char-xor
+  "Decrypts a given cipher, assuming it was XOR'd with a single character key"
+  [cipher]
+  (let [decoded     (decode-hex cipher)
+        candidate   (bruteforce-single-char-xor-key cipher)]
+    (apply-xor candidate decoded)))
 
 ;; CHALLENGE #4
 ;; In a file of 60 random strings XOR'd with a single character key,
