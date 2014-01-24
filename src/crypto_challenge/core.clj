@@ -53,7 +53,8 @@
   "XOR two strings, get the result as a string"
   [a b]
   (let [result (apply-xor-bytes a b)]
-    (apply str (map char result))))
+    (String. (byte-array (map byte result)))))
+    ;;(apply str (map char result))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; String Manipulation
