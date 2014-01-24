@@ -168,10 +168,12 @@
   (let [contents (slurp (get-resource r))]
     (clojure.string/split contents #"\n")))
 
-;; CHALLENGE #1
-;; Convert the hex-encoded string to base64 and back, preserving the original value.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Experiments
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn hex-to-base64-and-back
+  "Convert the hex-encoded string to base64 and back, preserving the original value."
   []
   (let [original "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
         expected "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
@@ -183,10 +185,8 @@
     (is (= original encoded))))
 
 
-;; CHALLENGE #2
-;; Given two equal length buffers, produce their XOR sum
-
 (defn xor-two-buffers
+  "Given two equal length buffers, produce their XOR sum"
   []
   (let [one      (decode-hex "1c0111001f010100061a024b53535009181c")
         two      (decode-hex "686974207468652062756c6c277320657965")
@@ -195,7 +195,6 @@
     (is (= result expected))))
 
 
-;; CHALLENGE #3
 ;; Decrypt a cipher which was XOR'd against a single character key
 ;; using frequency analysis to determine if decryption was successful
 
@@ -234,10 +233,9 @@
         candidate   (bruteforce-single-char-xor-key cipher)]
     (apply-xor candidate decoded)))
 
-;; CHALLENGE #4
-;; In a file of 60 random strings XOR'd with a single character key,
-;; find the one which is valid English
 (defn detect-single-char-xor-message
+  "In a file of 60 random strings XOR'd with a single character key,
+   find the one which is valid English"
   []
   (let [strings    (get-lines "gistfile1.txt")
         candidates (map bruteforce-single-char-xor-key strings)
