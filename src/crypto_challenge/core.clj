@@ -240,8 +240,16 @@
 (defn detect-single-char-xor-message
   []
   (let [strings    (get-lines "gistfile1.txt")
-        candidates (map decrypt-single-char-xor strings)]))
+        candidates (map bruteforce-single-char-xor-key strings)
+        scores     (map #(assoc {} % (is-english? %)) candidates)]
+        ;candidate  (key (first (reduce #(if (> (val (last %))
+                                               ;(val (last %2)))
+                                          ;%
+                                          ;%2)
+                                       ;scores)))]
+    scores))
 
 ;;(hex-to-base64-and-back)
 ;;(xor-two-buffers)
 ;;(decrypt-single-char-xor "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
+;;(detect-single-char-xor-message)
