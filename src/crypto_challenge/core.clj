@@ -59,6 +59,11 @@
 ;; String Manipulation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn char-range
+  "Generates a vector of characters between `start` and `end. The range is inclusive on both ends."
+  [start end]
+  (vec (map char (apply range [(int start) (inc (int end))]))))
+
 (defn repeat-char
   "Builds a string of a given character of `n` length"
   [c n]
@@ -118,7 +123,7 @@
 (defn score-letter-frequency
   "Score a string on the amount of overlap it has with average English letter frequency"
   [text]
-  (let [alphabet        (vec (char-array "ABCDEFGHIJKLMNOPQRSTUVWXYZ "))
+  (let [alphabet        (conj (char-range \A \Z) \space)
         english-freqs   (rseq english-frequencies)
         text-freqs      (rseq (to-prioritymap
                                  (select-keys (frequencies (.toUpperCase text))
@@ -205,7 +210,7 @@
   (let [decoded      (decode-hex cipher)
         len          (count decoded)
         ;; Get a sequence of all the single character cipher keys we wish to test
-        single-chars (map str (char-array "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
+        single-chars (map str (concat (char-range \A \Z) (char-range \0 \9)))
         ;; Map the single char key candidates to keys of equal length as the cipher
         cipherkeys   (map #(apply str (repeat len %)) single-chars)
         ;; Get a map of applying XOR to each key and the decoded cipher
